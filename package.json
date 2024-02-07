@@ -1,0 +1,40 @@
+{
+  "name": "node-server",
+  "version": "1.0.0",
+  "description": "node http接口服务",
+  "main": "src/App.ts",
+  "scripts": {
+    "dev": "cross-env NODE_ENV=dev nodemon -e ts --exec ts-node ./src/App",
+    "start": "cross-env NODE_ENV=prod ts-node ./dist/App",
+    "start:test": "cross-env NODE_ENV=test ts-node ./dist/App",
+    "build": "tsc && ts-node ./build-script/Obfuscate.ts",
+    "lint": "eslint --ext .ts,.tsx,.js,.jsx src --config .eslintrc.js",
+    "ts-compile-lint": "tsc -p tsconfig.json -noEmit true -w false"
+  },
+  "author": "chenJF",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^20.11.16",
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "@typescript-eslint/parser": "^6.21.0",
+    "cross-env": "^7.0.3",
+    "eslint": "^8.56.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-config-standard-with-typescript": "^43.0.1",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-n": "^16.6.2",
+    "eslint-plugin-prettier": "^5.1.3",
+    "eslint-plugin-promise": "^6.1.1",
+    "husky": "^9.0.10",
+    "javascript-obfuscator": "^4.1.0",
+    "nodemon": "^3.0.3",
+    "prettier": "^3.2.5",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run lint && npm run ts-compile-lint"
+    }
+  }
+}
