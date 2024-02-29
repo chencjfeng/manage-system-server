@@ -1,0 +1,6 @@
+{
+  "mode": "dev",
+  "port": 9000,
+  "uploadTmpDir": "/var/tmp/upload-tmp",
+  "logDir": "/var/log/node-log"
+}
