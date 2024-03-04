@@ -80,6 +80,7 @@ class DbConfig {
     username: '',
     password: '',
     database: 'node_server',
+    synchronize: false,
     entities: [`${path.join(__dirname, '../app/entity/**/*{.js,.ts}')}`],
     migrations: [`${path.join(__dirname, '../sql/**/*{.js,.ts}')}`],
   };
