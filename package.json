@@ -1,60 +1,67 @@
 {
-  "name": "node-server",
-  "version": "1.0.0",
-  "description": "node http接口服务",
-  "main": "src/App.ts",
-  "scripts": {
-    "dev": "cross-env NODE_ENV=dev nodemon -e ts --exec ts-node ./src/App",
-    "start": "cross-env NODE_ENV=prod ts-node ./dist/App",
-    "start:test": "cross-env NODE_ENV=test ts-node ./dist/App",
-    "build": "tsc && ts-node ./build-script/Obfuscate.ts",
-    "lint": "eslint --ext .ts,.tsx,.js,.jsx src --config .eslintrc.js",
-    "ts-compile-lint": "tsc -p tsconfig.json -noEmit true -w false"
-  },
-  "author": "chenJF",
-  "license": "ISC",
-  "dependencies": {
-    "class-transformer": "^0.5.1",
-    "class-validator": "^0.14.1",
-    "crypto-js": "^4.2.0",
-    "koa-body": "^6.0.1",
-    "koa-bodyparser": "^4.4.1",
-    "koa-cookie": "^1.0.0",
-    "koa-log4": "^2.3.2",
-    "koa-router": "^12.0.1",
-    "moment": "^2.30.1",
-    "mysql2": "^3.9.2",
-    "reflect-metadata": "^0.2.1",
-    "routing-controllers": "^0.10.4",
-    "typedi": "^0.10.0"
-  },
-  "devDependencies": {
-    "@types/koa": "^2.15.0",
-    "@types/koa-bodyparser": "^4.3.12",
-    "@types/koa-cookie": "^1.0.3",
-    "@types/koa-log4": "^2.3.6",
-    "@types/koa-router": "^7.4.8",
-    "@types/node": "^20.11.16",
-    "@typescript-eslint/eslint-plugin": "^6.21.0",
-    "@typescript-eslint/parser": "^6.21.0",
-    "cross-env": "^7.0.3",
-    "eslint": "^8.56.0",
-    "eslint-config-prettier": "^9.1.0",
-    "eslint-config-standard-with-typescript": "^43.0.1",
-    "eslint-plugin-import": "^2.29.1",
-    "eslint-plugin-n": "^16.6.2",
-    "eslint-plugin-prettier": "^5.1.3",
-    "eslint-plugin-promise": "^6.1.1",
-    "husky": "^9.0.10",
-    "javascript-obfuscator": "^4.1.0",
-    "nodemon": "^3.0.3",
-    "prettier": "^3.2.5",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.3.3"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "npm run lint && npm run ts-compile-lint"
-    }
-  }
+   "name": "node-server",
+   "version": "1.0.0",
+   "description": "node http接口服务",
+   "main": "src/App.ts",
+   "scripts": {
+      "dev": "cross-env NODE_ENV=dev nodemon -e ts --exec ts-node ./src/App",
+      "start": "ts-node src/index.ts",
+      "start:test": "cross-env NODE_ENV=test ts-node ./dist/App",
+      "build": "tsc && ts-node ./build-script/Obfuscate.ts",
+      "lint": "eslint --ext .ts,.tsx,.js,.jsx src --config .eslintrc.js",
+      "ts-compile-lint": "tsc -p tsconfig.json -noEmit true -w false",
+      "typeorm": "ts-node ./node_modules/typeorm/cli.js -d ./src/config/OrmCliConfig",
+      "typeorm:create": "cross-var ts-node ./node_modules/typeorm/cli migration:create src/sql/$npm_config_name",
+      "typeorm:run": "npm run typeorm migration:run",
+      "typeorm:revert": "npm run typeorm migration:revert"
+   },
+   "author": "chenJF",
+   "license": "ISC",
+   "dependencies": {
+      "class-transformer": "^0.5.1",
+      "class-validator": "^0.14.1",
+      "crypto-js": "^4.2.0",
+      "koa-body": "^6.0.1",
+      "koa-bodyparser": "^4.4.1",
+      "koa-cookie": "^1.0.0",
+      "koa-log4": "^2.3.2",
+      "koa-router": "^12.0.1",
+      "moment": "^2.30.1",
+      "mysql2": "^3.9.2",
+      "reflect-metadata": "^0.1.13",
+      "routing-controllers": "^0.10.4",
+      "typedi": "^0.10.0",
+      "typeorm": "0.3.20"
+   },
+   "devDependencies": {
+      "@types/crypto-js": "^4.2.2",
+      "@types/koa": "^2.15.0",
+      "@types/koa-bodyparser": "^4.3.12",
+      "@types/koa-cookie": "^1.0.3",
+      "@types/koa-log4": "^2.3.6",
+      "@types/koa-router": "^7.4.8",
+      "@types/node": "^16.11.10",
+      "@typescript-eslint/eslint-plugin": "^6.21.0",
+      "@typescript-eslint/parser": "^6.21.0",
+      "cross-env": "^7.0.3",
+      "cross-var": "^1.1.0",
+      "eslint": "^8.56.0",
+      "eslint-config-prettier": "^9.1.0",
+      "eslint-config-standard-with-typescript": "^43.0.1",
+      "eslint-plugin-import": "^2.29.1",
+      "eslint-plugin-n": "^16.6.2",
+      "eslint-plugin-prettier": "^5.1.3",
+      "eslint-plugin-promise": "^6.1.1",
+      "husky": "^9.0.10",
+      "javascript-obfuscator": "^4.1.0",
+      "nodemon": "^3.0.3",
+      "prettier": "^3.2.5",
+      "ts-node": "10.9.1",
+      "typescript": "4.5.2"
+   },
+   "husky": {
+      "hooks": {
+         "pre-commit": "npm run lint && npm run ts-compile-lint"
+      }
+   }
 }

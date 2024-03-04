@@ -22,6 +22,23 @@ class CommonTools {
       msg,
     };
   }
+
+  /**
+   * @Author: ChenJF
+   * @Date: 2024/3/4 15:05
+   * @Description: 错误信息返回
+   */
+  public static returnError(
+    code: CodeEnum,
+    msg = '',
+  ): CommonReturnInterface<Error> {
+    if (!msg) {
+      // 找枚举值对应的错误信息
+      msg = codeEnumToString(code);
+    }
+
+    return { data: new Error(msg), code, msg };
+  }
 }
 
 export { CommonTools };

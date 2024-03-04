@@ -17,3 +17,8 @@ npm run dev
 ```
 npm run start
 ```
+
+### 5.数据库表初始化
+```
+npm run typeorm:run
+```

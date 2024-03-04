@@ -4,6 +4,7 @@
  * @Description: 获取配置文件中的配置
  */
 import configData from './conf.json';
+import { IDbBaseConfig } from './DbConfig';
 
 export enum ConfigModeEnum {
   DEV = 'dev', // 开发者调试模式
@@ -15,6 +16,7 @@ export interface IConfig {
   uploadTmpDir: string; // 上传文件的临时目录
   logDir: string; // 日志存储目录
   port: number; // 服务监听的端口号
+  dbConfig?: IDbBaseConfig; // 数据库配置
 }
 
 const config = configData as IConfig;

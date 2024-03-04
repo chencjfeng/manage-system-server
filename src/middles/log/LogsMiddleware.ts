@@ -57,7 +57,6 @@ export class LogsMiddleware implements KoaMiddlewareInterface {
       }
 
       // 返回参数增加common字段，返回耗时和requestId
-      console.log(ctx.body);
       (ctx.body as any).common = {
         time: timeGap,
         requestId,

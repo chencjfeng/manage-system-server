@@ -1,4 +1,4 @@
-import { Application } from './application/Application';
+import { application } from './application/Application';
 
 /**
  * @Author: ChenJF
@@ -20,4 +20,4 @@ process.on('exit', (code) => {
   console.error(`About to exit with code：${code}`);
 });
 
-void Application.createServer();
+void application.createServer();

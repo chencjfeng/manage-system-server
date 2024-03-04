@@ -28,11 +28,11 @@ export class ErrorMiddleware implements KoaMiddlewareInterface {
       if (!ctx.body) {
         ctx.body = {};
       }
-      // 处理参数校验错误
       if (
         ctx?.status === HttpCode.BAD_REQUEST &&
         (ctx?.body as any)?.name === 'BadRequestError'
       ) {
+        // 处理参数校验错误
         ctx.status = 200;
         const { errors, common } = ctx.body;
         const newData = {};
@@ -57,7 +57,7 @@ export class ErrorMiddleware implements KoaMiddlewareInterface {
         const body = CommonTools.returnData(
           errors,
           HttpCode.NOT_FOUND,
-          'Not Found',
+          'Api Not Found',
         );
         ctx.body = {
           ...body,

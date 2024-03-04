@@ -2,5 +2,12 @@
   "mode": "dev",
   "port": 9000,
   "uploadTmpDir": "/var/tmp/upload-tmp",
-  "logDir": "/var/log/node-log"
+  "logDir": "/var/log/node-log",
+  "dbConfig": {
+    "host": "127.0.0.1",
+    "port": 3306,
+    "username": "root",
+    "password": "chenfeng",
+    "database": "node_server"
+  }
 }

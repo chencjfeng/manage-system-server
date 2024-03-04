@@ -1,3 +1,8 @@
+/**
+ * @Author: ChenJF
+ * @Date: 2024/3/1 15:35
+ * @Description: 日志log配置文件
+ */
 import log4 from 'koa-log4';
 import { NodeEnvTools } from '../tools/NodeEnvTools';
 import path from 'path';
@@ -92,18 +97,12 @@ class LogConfig {
       // hooks控制台输出
       if (config.mode === ConfigModeEnum.DEV) {
         // 调试模式，打印所有日志
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         console.trace = consoleLogger.trace.bind(consoleLogger);
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         console.debug = consoleLogger.debug.bind(consoleLogger);
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         console.log = consoleLogger.info.bind(consoleLogger);
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         console.info = consoleLogger.info.bind(consoleLogger);
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         console.warn = consoleLogger.warn.bind(consoleLogger);
       }
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       console.error = consoleLogger.error.bind(consoleLogger);
     }
   }

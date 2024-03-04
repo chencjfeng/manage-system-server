@@ -10,6 +10,7 @@ import { config } from '../config/Config';
 import cookie from 'koa-cookie';
 import { ErrorMiddleware } from '../middles/error/ErrorMiddleware';
 import { LogsMiddleware } from '../middles/log/LogsMiddleware';
+import { dbConfig } from '../config/DbConfig';
 
 /**
  * @Author: ChenJF
@@ -17,7 +18,9 @@ import { LogsMiddleware } from '../middles/log/LogsMiddleware';
  * @Description: 启动服务
  */
 class Application {
-  public static async createServer(): Promise<Koa> {
+  private koaClient: Koa;
+
+  public async createServer() {
     // 初始化上传文件临时目录
     UploadConfig.initUploadTmpDir();
     // 初始化日志工具
@@ -33,10 +36,12 @@ class Application {
     // 注入外部di依赖到控制器中
     useContainer(Container);
 
+    await dbConfig.connectDb();
+
     const app: Koa = useKoaServer<Koa>(koa, {
       routePrefix: '/api/v1', // 接口前缀
       middlewares: [ErrorMiddleware, LogsMiddleware], // 中间件
-      controllers: [path.join(__dirname, `../app/controllers/*{.ts,.js}`)],
+      controllers: [path.join(__dirname, `../app/controllers/**/*{.ts,.js}`)],
       validation: true,
     });
 
@@ -45,8 +50,10 @@ class Application {
     console.log(
       `koa服务已启动，启动端口为:${config.port}，访问服务可以通过：http://localhost:${config.port}`,
     );
-    return app;
+    this.koaClient = app;
   }
 }
 
-export { Application };
+// 单例
+const application = new Application();
+export { application };

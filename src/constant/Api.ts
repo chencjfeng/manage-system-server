@@ -6,6 +6,7 @@
 
 class Api {
   public static readonly TEST = '/test';
+  public static readonly LOGIN_API = '/login';
 }
 
 export { Api };

@@ -7,7 +7,7 @@ import moment from 'moment/moment';
 import { KoaBodyMiddlewareOptions } from 'koa-body/lib/types';
 import { NodeEnvTools } from '../tools/NodeEnvTools';
 import path from 'path';
-import fs, { mkdirSync } from 'fs';
+import fs from 'fs';
 import { File } from 'formidable';
 import { config } from './Config';
 
