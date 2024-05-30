@@ -131,10 +131,12 @@ class DbConfig {
 
     const username = process.env.DB_USERNAME; // 环境变量中获取用户名
     const password = process.env.DB_PASSWORD; // 环境变量中获取密码
-    if (username && !this.baseConfig?.username) {
+    if (username) {
+      // 使用环境变量中的用户名
       this.baseConfig.username = username;
     }
-    if (password && !this.baseConfig?.password) {
+    if (password) {
+      // 使用环境变量中的密码
       this.baseConfig.password = password;
     }
 

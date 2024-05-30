@@ -1,4 +1,4 @@
-import { IsMobilePhone, IsString, Min } from 'class-validator';
+import { IsMobilePhone, IsString, MinLength } from 'class-validator';
 
 class ITestReq {
   @IsString({
@@ -12,7 +12,7 @@ class ITestReq {
   @IsString({
     message: 'test2接收类型为string',
   })
-  @Min(1, {
+  @MinLength(1, {
     message: 'test2最小长度最少为1',
   })
   test2: string;

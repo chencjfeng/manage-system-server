@@ -11,6 +11,9 @@ import cookie from 'koa-cookie';
 import { ErrorMiddleware } from '../middles/error/ErrorMiddleware';
 import { LogsMiddleware } from '../middles/log/LogsMiddleware';
 import { dbConfig } from '../config/DbConfig';
+import { redisConfig } from '../config/RedisConfig';
+import { AuthMiddleware } from '../middles/auth/AuthMiddleware';
+import { API_PREFIX } from '../constant/Api';
 
 /**
  * @Author: ChenJF
@@ -36,11 +39,15 @@ class Application {
     // 注入外部di依赖到控制器中
     useContainer(Container);
 
+    // 数据库链接启动
     await dbConfig.connectDb();
 
+    // redis链接启动
+    redisConfig.connectRedis();
+
     const app: Koa = useKoaServer<Koa>(koa, {
-      routePrefix: '/api/v1', // 接口前缀
-      middlewares: [ErrorMiddleware, LogsMiddleware], // 中间件
+      routePrefix: API_PREFIX, // 接口前缀
+      middlewares: [ErrorMiddleware, LogsMiddleware, AuthMiddleware], // 中间件
       controllers: [path.join(__dirname, `../app/controllers/**/*{.ts,.js}`)],
       validation: true,
     });
