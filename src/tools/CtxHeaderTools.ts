@@ -2,6 +2,7 @@ import { RouterContext } from 'koa-router';
 
 class CtxHeaderTools {
   public static readonly REQUEST_ID = 'x-auth-request-id';
+  public static readonly LOGIN_NAME = 'x-auth-login-name';
 
   /**
    * @Author: ChenJF

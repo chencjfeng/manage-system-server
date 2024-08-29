@@ -1,5 +1,6 @@
 import { config } from './Config';
 import Ioredis from 'ioredis';
+import Redis from 'ioredis/built/Redis';
 
 export interface IRedisConfig {
   host: string; // ip
@@ -10,7 +11,7 @@ export interface IRedisConfig {
 
 class RedisConfig {
   private redisConfig: IRedisConfig;
-  private redisClient;
+  private redisClient: Redis;
   constructor() {
     this.initConfig();
   }
@@ -58,7 +59,6 @@ class RedisConfig {
         console.error('[connectRedis]', `Redis报错message：${err.message}`);
         console.error('[connectRedis]', `Redis报错stack：${err.stack}`);
       });
-      this.redisClient.setex('a', 60, 'b');
       console.log(this.redisClient.get('a'));
     } catch (e) {
       console.log(e);
@@ -84,25 +84,26 @@ class RedisConfig {
    * 释放锁
    * @param key
    */
-  public unlock(key: string) {
+  public async unlock(key: string) {
     key += ':lock';
-    this.redisClient.del(key);
+    return await this.del(key);
   }
 
   /**
    * 删除单个key
    * @param key
    */
-  public del(key: string) {
-    this.redisClient.del(key);
+  public async del(key: string) {
+    const result = await this.redisClient.del(key);
+    return result === 1;
   }
 
   /**
    * 获取单个number数据
    * @param key
    */
-  public getNumber(key: string) {
-    const val = this.getString(key);
+  public async getNumber(key: string) {
+    const val = await this.getString(key);
     return Number(val);
   }
 
@@ -112,16 +113,18 @@ class RedisConfig {
    * @param value
    * @param ttl
    */
-  public setNumber(key: string, value: number, ttl: number) {
-    this.redisClient.setex(key, ttl, value);
+  public async setNumber(key: string, value: number, ttl: number) {
+    const result = await this.redisClient.setex(key, ttl, value);
+    return result === 'OK';
   }
 
-  public getString(key: string) {
-    return this.redisClient.get(key) as string;
+  public async getString(key: string) {
+    return (await this.redisClient.get(key)) ?? '';
   }
 
-  public setString(key: string, value: string, ttl: number) {
-    this.redisClient.setex(key, ttl, value);
+  public async setString(key: string, value: string, ttl: number) {
+    const result = await this.redisClient.setex(key, ttl, value);
+    return result === 'OK';
   }
 }
 

@@ -12,6 +12,7 @@ export class User1709281266585 implements MigrationInterface {
            \`password\` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '密码',
            \`username\` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '姓名(中文名)',
            \`status\` varchar(32) DEFAULT 'ENABLE' COMMENT '用户状态',
+           \`is_default\` int(1) NOT NULL DEFAULT '0' COMMENT '是否默认用户，1是，0否',
            \`role_ids\` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '角色id',
            \`creator\` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '新建人',
            \`create_time\` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '新建时间',
@@ -23,7 +24,7 @@ export class User1709281266585 implements MigrationInterface {
         `);
     // 初始化admin用户
     await queryRunner.query(
-      `INSERT INTO user (login_name, password, username, creator, updater) VALUES ('admin', '${pwd}', 'admin', 'admin', 'admin')`,
+      `INSERT INTO user (login_name, password, username, creator, updater, is_default) VALUES ('admin', '${pwd}', 'admin', 'admin', 'admin', 1)`,
     );
   }
 

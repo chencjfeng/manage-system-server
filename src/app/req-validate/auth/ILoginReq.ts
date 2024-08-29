@@ -1,4 +1,5 @@
 import { IsString } from 'class-validator';
+import { IsDecryptPwd } from '../../../decorator/validator/IsDecryptPwd';
 
 class ILoginReq {
   @IsString({
@@ -8,6 +9,9 @@ class ILoginReq {
 
   @IsString({
     message: 'password接收类型为string',
+  })
+  @IsDecryptPwd({
+    message: 'password内容解密失败',
   })
   password: string;
 }

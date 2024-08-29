@@ -8,6 +8,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { AesTools } from '../../tools/AesTools';
+import { BooleanEunm } from '../../enum/CommonEnum';
 
 enum UserStatusEnum {
   ENABLE = 'ENABLE', // 启用
@@ -23,7 +24,7 @@ enum UserStatusEnum {
 class UserEntity {
   // id
   @PrimaryGeneratedColumn({ name: 'id' })
-  id: number;
+  id?: number;
 
   // 登录名
   @Column({ name: 'login_name' })
@@ -32,6 +33,15 @@ class UserEntity {
   // 密码，select时候默认不返回
   @Column({ name: 'password', select: false })
   password?: string;
+
+  // 是否默认用户，默认用户不可删除，只能修改密码
+  @Column({
+    name: 'is_default',
+    enum: BooleanEunm,
+    type: 'enum',
+    default: BooleanEunm.FALSE,
+  })
+  isDefault?: BooleanEunm;
 
   // 姓名(中文名)
   @Column({ name: 'username' })
@@ -44,11 +54,11 @@ class UserEntity {
     type: 'enum',
     default: UserStatusEnum.ENABLE,
   })
-  status: UserStatusEnum;
+  status?: UserStatusEnum;
 
   // 用户的角色id，多个用逗号分割
   @Column({ name: 'role_ids', type: 'simple-array' })
-  roleIds?: string[];
+  roleIds?: number[];
 
   // 创建人
   @Column({ name: 'creator', default: 'admin' })
@@ -65,6 +75,16 @@ class UserEntity {
   // 更新时间
   @CreateDateColumn({ name: 'update_time', update: true })
   updateTime?: string;
+
+  // 是否默认用户，默认用户不可删除，只能修改密码
+  @Column({
+    name: 'is_del',
+    enum: BooleanEunm,
+    type: 'enum',
+    default: BooleanEunm.FALSE,
+    select: false,
+  })
+  isDel?: BooleanEunm;
 
   /**
    * @Author: ChenJF
@@ -98,4 +118,4 @@ class UserEntity {
   }
 }
 
-export { UserEntity };
+export { UserEntity, UserStatusEnum };

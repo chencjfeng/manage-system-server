@@ -9,6 +9,7 @@ import { AuthService } from '../../app/service/auth/AuthService';
 import { HttpCode } from '../../constant/HttpCode';
 import { CommonTools } from '../../tools/CommonTools';
 import { CookieTools } from '../../tools/CookieTools';
+import { CtxHeaderTools } from '../../tools/CtxHeaderTools';
 
 /**
  * @Author: ChenJF
@@ -45,10 +46,15 @@ export class AuthMiddleware implements KoaMiddlewareInterface {
     // 从 cookie 中获取 token，兼容小写（有些浏览器会自动将cookie中的key转为小写）
     const token = CookieTools.getCookie(CookieKeyEnum.AUTH_TOKEN, ctx) ?? '';
     // 校验token
-    if (token && this.authService.verifyToken(token)) {
-      // 校验通过，放行
-      await next();
-      return;
+    if (token) {
+      const loginName = await this.authService.verifyTokenLoginName(token);
+      if (loginName) {
+        // 登录名放到请求头中，方便后面controller中通过修饰函数@CurrentLoginName获取
+        ctx.header[CtxHeaderTools.LOGIN_NAME] = loginName;
+        // 校验通过，放行
+        await next();
+        return;
+      }
     }
     // 校验失败，返回错误信息
     this.signatureError(
@@ -58,6 +64,10 @@ export class AuthMiddleware implements KoaMiddlewareInterface {
   }
 
   private isWhitePath(urlPath: string): boolean {
+    // 考虑到部分性能，接口只用post，不用restful标准那套
+    // 如果标准restful则将whitePathMap需要将key转为数组，遍历数组，利用正则判断urlPath是否有符合拦截标准key
+    // new RegExp(`^${'常量定义好的白名单key'.replace(/:\w+/g, '\\w+')}$`).test(urlPath)
+    // 同时还需要传入method，判断method是否一致（delete和update的接口一般定义一致）
     return this.whitePathMap[urlPath] || false;
   }
 
