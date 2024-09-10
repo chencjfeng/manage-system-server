@@ -1,9 +1,10 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
-import { AesTools } from '../../tools/AesTools';
+import { RoleEntity } from '../../app/entity/RoleEntity';
+import { UserEntity } from '../../app/entity/UserEntity';
+import { BooleanEunm } from '../../enum/CommonEnum';
 
-export class User1709281266585 implements MigrationInterface {
+export class User1725506050973 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
-    const pwd = AesTools.encryptData('Admin_321', AesTools.PASSWORD_SEC_KEY);
     // 初始化用户表
     await queryRunner.query(`
         CREATE TABLE \`user\` (
@@ -22,10 +23,22 @@ export class User1709281266585 implements MigrationInterface {
            PRIMARY KEY (\`id\`)
         ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '用户信息表'
         `);
+    const role = await queryRunner.manager
+      .createQueryBuilder(RoleEntity, 'role')
+      .where('role.name >= :name', { name: '超级管理员' })
+      .getOne();
+
+    const adminUser = new UserEntity({
+      loginName: 'admin',
+      password: 'Admin_321',
+      username: 'admin',
+      creator: 'admin',
+      updater: 'admin',
+      isDefault: BooleanEunm.TRUE,
+      roleIds: role?.id ? [role?.id] : [],
+    });
     // 初始化admin用户
-    await queryRunner.query(
-      `INSERT INTO user (login_name, password, username, creator, updater, is_default) VALUES ('admin', '${pwd}', 'admin', 'admin', 'admin', 1)`,
-    );
+    await queryRunner.manager.insert(UserEntity, [adminUser]);
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {

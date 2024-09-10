@@ -14,6 +14,7 @@ import { dbConfig } from '../config/DbConfig';
 import { redisConfig } from '../config/RedisConfig';
 import { AuthMiddleware } from '../middles/auth/AuthMiddleware';
 import { API_PREFIX } from '../constant/Api';
+import { authorizationChecker } from '../decorator/controller/ApiAuth';
 
 /**
  * @Author: ChenJF
@@ -50,6 +51,7 @@ class Application {
       middlewares: [ErrorMiddleware, LogsMiddleware, AuthMiddleware], // 中间件
       controllers: [path.join(__dirname, `../app/controllers/**/*{.ts,.js}`)],
       validation: true,
+      authorizationChecker,
     });
 
     app.listen(config.port);

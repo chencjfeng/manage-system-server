@@ -8,6 +8,8 @@ import { IPwdConfirmDeleteReq } from '../../req-validate/common/IDeleteReq';
 import { IUserStatusReq } from '../../req-validate/user/IUserStatusReq';
 import { IUserEditReq } from '../../req-validate/user/IUserEditReq';
 import { IUserPwdReq } from '../../req-validate/user/IUserPwdReq';
+import { ModuleEnum, OperationEnum } from '../../../enum/PermissionEnum';
+import { ApiAuth } from '../../../decorator/controller/ApiAuth';
 
 @JsonController()
 @Service()
@@ -15,6 +17,7 @@ class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post(Api.USER_ADD)
+  @ApiAuth(ModuleEnum.USER, OperationEnum.ADD)
   public async userAdd(
     @CurrentLoginName() loginName: string,
     @Body({ validate: true }) body: IUserAddReq,
@@ -23,6 +26,7 @@ class UserController {
   }
 
   @Post(Api.USER_DELETE)
+  @ApiAuth(ModuleEnum.USER, OperationEnum.DELETE)
   public async delete(
     @CurrentLoginName() loginName: string,
     @Body({ validate: true }) body: IPwdConfirmDeleteReq,
@@ -31,6 +35,7 @@ class UserController {
   }
 
   @Post(Api.USER_STATUS)
+  @ApiAuth(ModuleEnum.USER, OperationEnum.EDIT)
   public async editStatus(
     @CurrentLoginName() loginName: string,
     @Body({ validate: true }) body: IUserStatusReq,
@@ -39,6 +44,7 @@ class UserController {
   }
 
   @Post(Api.USER_EDIT)
+  @ApiAuth(ModuleEnum.USER, OperationEnum.EDIT)
   public async editUserInfo(
     @CurrentLoginName() loginName: string,
     @Body({ validate: true }) body: IUserEditReq,
@@ -47,6 +53,7 @@ class UserController {
   }
 
   @Post(Api.USER_PASSWORD)
+  @ApiAuth(ModuleEnum.USER, OperationEnum.EDIT)
   public async editUserPassword(
     @CurrentLoginName() loginName: string,
     @Body({ validate: true }) body: IUserPwdReq,

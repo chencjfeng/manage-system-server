@@ -15,9 +15,12 @@ import {
   IUserEditResp,
 } from '../../req-validate/user/IUserEditReq';
 import { IUserPwdReq, IUserPwdResp } from '../../req-validate/user/IUserPwdReq';
+import { RoleService } from '../role/RoleService';
 
 @Service()
 class UserService {
+  constructor(private readonly roleService: RoleService) {}
+
   /**
    * @Author: ChenJF
    * @Date: 2024/8/26 10:28
@@ -33,12 +36,13 @@ class UserService {
       AesTools.BROWSER_SEC_KEY,
     );
 
-    const insertUser: UserEntity = new UserEntity();
-    insertUser.password = decryptPwd;
-    insertUser.username = userInfo.username;
-    insertUser.loginName = userInfo.loginName;
-    insertUser.roleIds = userInfo.roleIds;
-    insertUser.creator = creatorName;
+    const insertUser = new UserEntity({
+      password: decryptPwd,
+      username: userInfo.username,
+      loginName: userInfo.loginName,
+      roleIds: userInfo.roleIds,
+      creator: creatorName,
+    });
 
     try {
       const where: FindOptionsWhere<UserEntity> = {
@@ -272,6 +276,29 @@ class UserService {
       .where(where);
     const userInfo = await repository.getOne();
     console.log('[getUserInfoForLoginName]', loginName, userInfo);
+    return userInfo;
+  }
+
+  /**
+   * @Author: ChenJF
+   * @Date: 2024/8/22 09:21
+   * @Description: 根据登录名获取用户信息，包含角色权限，未删除的用户
+   */
+  public async getUserInfoAndRoleForLoginName(loginName: string) {
+    const where: FindOptionsWhere<UserEntity> = {
+      loginName,
+      isDel: BooleanEunm.FALSE,
+    };
+    const repository = getRepository(UserEntity)
+      .createQueryBuilder('user')
+      .addSelect('user.password') // 默认password字段不select，这里要加上用于登录密码校验
+      .where(where);
+    const userInfo = await repository.getOne();
+    console.log('[getUserInfoAndRoleForLoginName]', loginName, userInfo);
+    if (userInfo?.roleIds) {
+      // 继续查询角色信息
+      userInfo.roles = await this.roleService.getRolesForIds(userInfo.roleIds);
+    }
     return userInfo;
   }
 

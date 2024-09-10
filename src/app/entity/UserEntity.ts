@@ -9,6 +9,8 @@ import {
 } from 'typeorm';
 import { AesTools } from '../../tools/AesTools';
 import { BooleanEunm } from '../../enum/CommonEnum';
+import { RoleEntity } from './RoleEntity';
+import { NumberArrayTransformer } from '../../tools/NumberArrayTransformer';
 
 enum UserStatusEnum {
   ENABLE = 'ENABLE', // 启用
@@ -22,6 +24,12 @@ enum UserStatusEnum {
  */
 @Entity('user')
 class UserEntity {
+  constructor(user?: Partial<UserEntity>) {
+    if (user) {
+      Object.assign(this, user);
+    }
+  }
+
   // id
   @PrimaryGeneratedColumn({ name: 'id' })
   id?: number;
@@ -57,7 +65,11 @@ class UserEntity {
   status?: UserStatusEnum;
 
   // 用户的角色id，多个用逗号分割
-  @Column({ name: 'role_ids', type: 'simple-array' })
+  @Column({
+    name: 'role_ids',
+    type: 'simple-array',
+    transformer: new NumberArrayTransformer(),
+  })
   roleIds?: number[];
 
   // 创建人
@@ -85,6 +97,8 @@ class UserEntity {
     select: false,
   })
   isDel?: BooleanEunm;
+
+  roles?: RoleEntity[];
 
   /**
    * @Author: ChenJF

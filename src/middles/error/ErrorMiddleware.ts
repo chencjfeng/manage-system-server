@@ -50,6 +50,22 @@ export class ErrorMiddleware implements KoaMiddlewareInterface {
           ...body,
           common,
         };
+      } else if (
+        ctx?.status === HttpCode.ACCESS_DENIED_ERROR &&
+        (ctx?.body as any)?.name === 'AccessDeniedError'
+      ) {
+        // 没有权限
+        ctx.status = HttpCode.ACCESS_DENIED_ERROR;
+        const { errors, common } = ctx.body;
+        const body = CommonTools.returnData(
+          errors,
+          HttpCode.ACCESS_DENIED_ERROR,
+          `当前登录用户对接口【${ctx.request.path}】没有访问权限`,
+        );
+        ctx.body = {
+          ...body,
+          common,
+        };
       } else if (ctx.status === HttpCode.NOT_METHOD) {
         // 找不到接口
         ctx.status = HttpCode.NOT_FOUND;
