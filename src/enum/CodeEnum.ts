@@ -10,7 +10,7 @@ enum CodeEnum {
   LOGIN_PASSWORD_VERIFY_ERROR = 102, // 登录密码校验失败
   LOGIN_COMMON_ERROR = 103, // 登录失败
   LOGIN_USER_DISABLE_ERROR = 104, // 用户被禁用
-  USER_PASSWORD_ERROR = 120, // 用户密码解密失败（空置）
+  USER_ROLE_ERROR = 120, // 用户角色不匹配
   USER_LOGIN_NAME_SAME = 121, // 登录名相同
   USER_LOGIN_PASSWORD_ERROR = 122, // 密码错误
   USER_DELETE_EMPTY_ERROR = 123, // 删除用户不存在
@@ -18,6 +18,10 @@ enum CodeEnum {
   USER_EDIT_EMPTY_ERROR = 125, // 编辑用户不存在
   USER_EDIT_SUPER_ADMIN_ERROR = 126, // 超级管理员禁止编辑
   USER_EDIT_PASSWORD_ERROR = 127, // 密码错误
+  ROLE_PERMISSION_NOT_ERROR = 140, // 角色权限不匹配
+  ROLE_DELETE_EMPTY_ERROR = 141, // 删除角色不存在
+  ROLE_DELETE_DEFAULT_ERROR = 142, // 系统角色，无法删除
+  ROLE_EDIT_EMPTY_ERROR = 143, // 角色不存在
 }
 
 const CodeMsgEnum = {
@@ -30,7 +34,7 @@ const CodeMsgEnum = {
   LOGIN_PASSWORD_VERIFY_ERROR: '登录名或密码错误', // 登录密码校验失败 - 统一提示账号或密码错误
   LOGIN_COMMON_ERROR: '登录失败，请重试',
   LOGIN_USER_DISABLE_ERROR: '该用户处于禁止登录状态',
-  USER_PASSWORD_ERROR: '用户密码解密失败，请检测参数',
+  USER_ROLE_ERROR: '用户创建失败，用户所属角色不存在',
   USER_LOGIN_NAME_SAME: '用户创建失败，已存在相同登录名用户',
   USER_LOGIN_PASSWORD_ERROR: '确认密码错误，请重新输入',
   USER_DELETE_EMPTY_ERROR: '删除用户失败：删除的用户不存在',
@@ -38,6 +42,10 @@ const CodeMsgEnum = {
   USER_EDIT_EMPTY_ERROR: '编辑用户失败：编辑的用户不存在',
   USER_EDIT_SUPER_ADMIN_ERROR: '编辑用户失败：超级管理员禁止编辑',
   USER_EDIT_PASSWORD_ERROR: '编辑用户密码失败：旧密码错误',
+  ROLE_PERMISSION_NOT_ERROR: '没有匹配的角色权限',
+  ROLE_DELETE_EMPTY_ERROR: '删除角色失败：删除的角色不存在',
+  ROLE_DELETE_DEFAULT_ERROR: '删除角色失败：系统角色无法删除',
+  ROLE_EDIT_EMPTY_ERROR: '编辑角色失败：编辑的角色不存在',
 };
 
 const codeEnumToString = (code: CodeEnum): string => {

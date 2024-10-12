@@ -53,9 +53,32 @@ class UserService {
         .createQueryBuilder('user')
         .where(where)
         .getOne();
+
       if (hasUser) {
         // 存在相同登录名，不可以创建
         return CommonTools.returnError(CodeEnum.USER_LOGIN_NAME_SAME);
+      }
+
+      // 检查roleId是否有不存在的
+      const roles = await this.roleService.getRolesForIds(userInfo.roleIds);
+      if (roles.length !== userInfo.roleIds.length) {
+        const roleMap = {};
+        roles.forEach((r) => {
+          if (r.id) {
+            roleMap[r.id] = true;
+          }
+        });
+        // 不存在的角色id
+        const errorIds: number[] = [];
+        userInfo.roleIds.forEach((id) => {
+          if (!roleMap[id]) {
+            errorIds.push(id);
+          }
+        });
+        // 长度不匹配，说明有角色不存在
+        return CommonTools.returnError(CodeEnum.USER_ROLE_ERROR, {
+          errorIds,
+        });
       }
 
       const resp = await getRepository(UserEntity).insert(insertUser);
@@ -88,10 +111,6 @@ class UserService {
       delInfo.confirmPwd,
       AesTools.BROWSER_SEC_KEY,
     );
-    if (!decryptPwd) {
-      // 解密失败
-      return CommonTools.returnError(CodeEnum.USER_PASSWORD_ERROR);
-    }
 
     try {
       const currentInfo = await this.getUserInfoForLoginName(deleteName);
@@ -189,23 +208,28 @@ class UserService {
       return CommonTools.returnError(CodeEnum.USER_EDIT_EMPTY_ERROR);
     }
 
-    // 修改用户状态
-    const resp = await getRepository(UserEntity)
-      .createQueryBuilder()
-      .update()
-      .set({
-        username: req.username,
-        updater: currentName,
-      })
-      .where('id = :id', { id: req.id })
-      .execute();
-    if (SqlTools.isSuccess(resp)) {
-      // 修改成功
-      return CommonTools.returnData({ id: req.id });
-    }
+    try {
+      // 修改用户状态
+      const resp = await getRepository(UserEntity)
+        .createQueryBuilder()
+        .update()
+        .set({
+          username: req.username,
+          updater: currentName,
+        })
+        .where('id = :id', { id: req.id })
+        .execute();
+      if (SqlTools.isSuccess(resp)) {
+        // 修改成功
+        return CommonTools.returnData({ id: req.id });
+      }
 
-    console.log('[editUser]', resp);
-    return CommonTools.returnError(CodeEnum.DB_UPDATE_ERROR);
+      console.log('[editUser]', resp);
+      return CommonTools.returnError(CodeEnum.DB_UPDATE_ERROR);
+    } catch (e) {
+      console.error('[editUser]', '编辑用户失败', e);
+      return CommonTools.returnError(CodeEnum.DB_UPDATE_ERROR);
+    }
   }
 
   /**
@@ -308,17 +332,22 @@ class UserService {
    * @Description: 根据用户id获取用户信息
    */
   public async getUserInfoForId(id: number) {
-    const where: FindOptionsWhere<UserEntity> = {
-      id,
-      isDel: BooleanEunm.FALSE,
-    };
-    const repository = getRepository(UserEntity)
-      .createQueryBuilder('user')
-      .addSelect('user.password') // 默认password字段不select，这里要加上用于登录密码校验
-      .where(where);
-    const userInfo = await repository.getOne();
-    console.log('[getUserInfoForId]', id, userInfo);
-    return userInfo;
+    try {
+      const where: FindOptionsWhere<UserEntity> = {
+        id,
+        isDel: BooleanEunm.FALSE,
+      };
+      const repository = getRepository(UserEntity)
+        .createQueryBuilder('user')
+        .addSelect('user.password') // 默认password字段不select，这里要加上用于登录密码校验
+        .where(where);
+      const userInfo = await repository.getOne();
+      console.log('[getUserInfoForId]', id, userInfo);
+      return userInfo;
+    } catch (e) {
+      console.error('[getUserInfoForId]', e);
+      return null;
+    }
   }
 
   /**

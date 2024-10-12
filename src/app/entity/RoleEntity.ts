@@ -8,6 +8,12 @@ import { BooleanEunm } from '../../enum/CommonEnum';
 
 @Entity('role')
 class RoleEntity {
+  constructor(role?: Partial<RoleEntity>) {
+    if (role) {
+      Object.assign(this, role);
+    }
+  }
+
   // id
   @PrimaryGeneratedColumn({ name: 'id' })
   id?: number;

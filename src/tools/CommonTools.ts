@@ -30,6 +30,7 @@ class CommonTools {
    */
   public static returnError(
     code: CodeEnum,
+    data?: any,
     msg = '',
   ): CommonReturnInterface<Error> {
     if (!msg) {
@@ -37,7 +38,11 @@ class CommonTools {
       msg = codeEnumToString(code);
     }
 
-    return { data: new Error(msg), code, msg };
+    if (!data) {
+      data = new Error(msg);
+    }
+
+    return { data, code, msg };
   }
 }
 

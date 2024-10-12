@@ -5,6 +5,7 @@ import {
   IsNotEmpty,
   IsString,
 } from 'class-validator';
+import { IsDecryptPwd } from '../../../decorator/validator/IsDecryptPwd';
 
 class IDeleteReq {
   @IsArray({
@@ -32,6 +33,7 @@ class IPwdConfirmDeleteReq extends IDeleteReq {
   @IsNotEmpty({
     message: 'confirmPwd字段不能为空',
   })
+  @IsDecryptPwd({ message: 'confirmPwd密码错误，请确认加密方式' })
   confirmPwd: string;
 }
 

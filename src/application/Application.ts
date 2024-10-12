@@ -51,7 +51,7 @@ class Application {
       middlewares: [ErrorMiddleware, LogsMiddleware, AuthMiddleware], // 中间件
       controllers: [path.join(__dirname, `../app/controllers/**/*{.ts,.js}`)],
       validation: true,
-      authorizationChecker,
+      authorizationChecker, // api鉴权
     });
 
     app.listen(config.port);

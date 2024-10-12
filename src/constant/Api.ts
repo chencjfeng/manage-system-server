@@ -15,6 +15,11 @@ class Api {
   public static readonly USER_EDIT = '/user/edit';
   public static readonly USER_STATUS = '/user/status';
   public static readonly USER_PASSWORD = '/user/password';
+
+  public static readonly ROLE_PERMISSION_LIST = '/role/permissionList';
+  public static readonly ROLE_ADD = '/role/add';
+  public static readonly ROLE_EDIT = '/role/edit';
+  public static readonly ROLE_DELETE = '/role/del';
 }
 
 export { Api, API_PREFIX };

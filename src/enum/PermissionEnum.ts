@@ -1,50 +1,19 @@
-import { PermissionEntity } from '../app/entity/PermissionEntity';
-
-enum ModuleEnum {
-  USER = 'USER', // 用户
-  ROLE = 'ROLE', // 角色
+interface IPermission {
+  id: string; // id
+  module: ModuleEnum; // 模块
+  moduleName: string; // 模块名称，中文名
+  operation: OperationEnum; // 操作权限
+  operationName: string; // 操作权限名称
 }
 
-enum ModuleStringEnum {
-  USER = '用户管理', // 用户
-  ROLE = '角色管理', // 角色
-}
-
-enum OperationEnum {
-  ADD = 'ADD',
-  EDIT = 'EDIT',
-  DELETE = 'DELETE',
-  EXPORT = 'EXPORT',
-  IMPORT = 'IMPORT',
-}
-
-enum OperationStringEnum {
-  ADD = '新建',
-  EDIT = '编辑',
-  DELETE = '删除',
-  EXPORT = '导出',
-  IMPORT = '导入',
-}
-
-interface PermissionMap {
+interface IPermissionResp {
   module: ModuleEnum;
-  operations: OperationEnum[];
+  moduleName: ModuleStringEnum;
+  operations: IPermission[];
 }
-const PermissionList: PermissionMap[] = [
-  {
-    // 用户管理
-    module: ModuleEnum.USER,
-    operations: [OperationEnum.ADD, OperationEnum.EDIT, OperationEnum.DELETE],
-  },
-  {
-    // 角色管理
-    module: ModuleEnum.ROLE,
-    operations: [OperationEnum.ADD, OperationEnum.EDIT, OperationEnum.DELETE],
-  },
-];
 
-const initPermissionTableData = (): PermissionEntity[] => {
-  const list: PermissionEntity[] = [];
+const initPermissionEntityList = (): IPermission[] => {
+  const list: IPermission[] = [];
   PermissionList.forEach((p) => {
     const module = p.module as ModuleEnum;
     const moduleName = ModuleStringEnum[module];
@@ -62,6 +31,67 @@ const initPermissionTableData = (): PermissionEntity[] => {
   return list;
 };
 
+enum ModuleEnum {
+  USER = 'USER', // 用户
+  ROLE = 'ROLE', // 角色
+}
+
+enum ModuleStringEnum {
+  USER = '用户管理', // 用户
+  ROLE = '角色管理', // 角色
+}
+
+enum OperationEnum {
+  QUERY = 'QUERY',
+  ADD = 'ADD',
+  EDIT = 'EDIT',
+  DELETE = 'DELETE',
+  EXPORT = 'EXPORT',
+  IMPORT = 'IMPORT',
+}
+
+enum OperationStringEnum {
+  QUERY = '查看',
+  ADD = '新建',
+  EDIT = '编辑',
+  DELETE = '删除',
+  EXPORT = '导出',
+  IMPORT = '导入',
+}
+
+interface IPermissionMap {
+  module: ModuleEnum;
+  operations: OperationEnum[];
+}
+const PermissionList: IPermissionMap[] = [
+  {
+    // 用户管理
+    module: ModuleEnum.USER,
+    operations: [
+      OperationEnum.QUERY,
+      OperationEnum.ADD,
+      OperationEnum.EDIT,
+      OperationEnum.DELETE,
+    ],
+  },
+  {
+    // 角色管理
+    module: ModuleEnum.ROLE,
+    operations: [
+      OperationEnum.QUERY,
+      OperationEnum.ADD,
+      OperationEnum.EDIT,
+      OperationEnum.DELETE,
+    ],
+  },
+];
+
+const PermissionMap: Record<string, IPermission> =
+  initPermissionEntityList().reduce((acc, obj) => {
+    acc[obj.id] = obj;
+    return acc; // 返回累加器
+  }, {});
+
 const getAllPermissionIds = (): string[] => {
   const list: string[] = [];
   PermissionList.forEach((p) => {
@@ -72,12 +102,36 @@ const getAllPermissionIds = (): string[] => {
   return list;
 };
 
+const getAllPermissionList = (): IPermissionResp[] => {
+  const list: IPermissionResp[] = [];
+  PermissionList.forEach((p) => {
+    const module = p.module as ModuleEnum;
+    const moduleName = ModuleStringEnum[module];
+
+    const m: IPermissionResp = {
+      module,
+      moduleName,
+      operations: [],
+    };
+    p.operations.forEach((op) => {
+      const id = `${module}_${op}`;
+      m.operations.push(PermissionMap[id]);
+    });
+    list.push(m);
+  });
+
+  return list;
+};
+
 export {
   ModuleEnum,
   ModuleStringEnum,
   OperationEnum,
   OperationStringEnum,
   PermissionList,
-  initPermissionTableData,
+  PermissionMap,
   getAllPermissionIds,
+  type IPermission,
+  type IPermissionResp,
+  getAllPermissionList,
 };
