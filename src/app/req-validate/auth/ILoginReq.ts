@@ -1,5 +1,6 @@
 import { IsString } from 'class-validator';
 import { IsDecryptPwd } from '../../../decorator/validator/IsDecryptPwd';
+import { UserEntity } from '../../entity/UserEntity';
 
 class ILoginReq {
   @IsString({
@@ -17,8 +18,7 @@ class ILoginReq {
 }
 
 interface ILoginResp {
-  loginName: string;
-  userName: string;
+  userInfo: UserEntity;
   token: string;
 }
 

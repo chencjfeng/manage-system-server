@@ -68,8 +68,7 @@ class AuthService {
     // 如果需要打登录日志，则在这里处理
 
     return CommonTools.returnData({
-      userName: userInfo.username,
-      loginName: userInfo.loginName,
+      userInfo,
       token,
     });
   }

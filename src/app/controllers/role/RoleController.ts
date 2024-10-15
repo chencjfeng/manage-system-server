@@ -13,6 +13,8 @@ import { IRoleAddReq } from '../../req-validate/role/IRoleAddReq';
 import { IRoleEditReq } from '../../req-validate/role/IRoleEditReq';
 import { IDeleteReq } from '../../req-validate/common/IDeleteReq';
 import { CommonTools } from '../../../tools/CommonTools';
+import { IListReq } from '../../req-validate/common/IListReq';
+import { IRoleDetailReq } from '../../req-validate/role/IRoleDetailReq';
 
 @JsonController()
 @Service()
@@ -24,6 +26,18 @@ class RoleController {
   public permissionList() {
     const permissionList = getAllPermissionList();
     return CommonTools.returnData(permissionList);
+  }
+
+  @Post(Api.ROLE_LIST)
+  @ApiAuth(ModuleEnum.ROLE, OperationEnum.QUERY)
+  public async roleList(@Body({ validate: true }) body: IListReq) {
+    return await this.roleService.roleList(body);
+  }
+
+  @Post(Api.ROLE_DETAIL)
+  @ApiAuth(ModuleEnum.ROLE, OperationEnum.QUERY)
+  public async roleDetail(@Body({ validate: true }) body: IRoleDetailReq) {
+    return await this.roleService.roleDetail(body);
   }
 
   @Post(Api.ROLE_ADD)

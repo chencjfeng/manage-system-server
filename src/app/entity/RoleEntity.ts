@@ -5,6 +5,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { BooleanEunm } from '../../enum/CommonEnum';
+import { IPermission } from '../../enum/PermissionEnum';
 
 @Entity('role')
 class RoleEntity {
@@ -59,6 +60,8 @@ class RoleEntity {
     select: false,
   })
   isDel?: BooleanEunm;
+
+  permissions?: IPermission[];
 }
 
 export { RoleEntity };

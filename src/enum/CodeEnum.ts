@@ -6,6 +6,7 @@ enum CodeEnum {
   DB_INSERT_ERROR = 10, // 数据库插入错误
   DB_UPDATE_ERROR = 12, // 数据库更新错误
   DB_DELETE_ERROR = 13, // 数据库删除错误
+  DB_QUERY_ERROR = 14, // 数据库查询错误
   LOGIN_USERNAME_ERROR = 100, // 登录用户不存在
   LOGIN_PASSWORD_VERIFY_ERROR = 102, // 登录密码校验失败
   LOGIN_COMMON_ERROR = 103, // 登录失败
@@ -29,6 +30,7 @@ const CodeMsgEnum = {
   DB_INSERT_ERROR: '数据库插入失败',
   DB_UPDATE_ERROR: '数据库更新失败',
   DB_DELETE_ERROR: '数据库删除失败',
+  DB_QUERY_ERROR: '数据库查询失败',
   COMMON_PARAMS_ERROR: '请求参数不符合要求，请检查参数', // 参数错误,
   LOGIN_USERNAME_ERROR: '登录名或密码错误', // 登录用户不存在 - 统一提示账号或密码错误
   LOGIN_PASSWORD_VERIFY_ERROR: '登录名或密码错误', // 登录密码校验失败 - 统一提示账号或密码错误

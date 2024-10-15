@@ -11,8 +11,76 @@ import { IDeleteReq } from '../../req-validate/common/IDeleteReq';
 import { IBatchHandleResp } from '../../../type/Common';
 import { IRoleEditReq } from '../../req-validate/role/IRoleEditReq';
 
+import { IListReq, IListResp } from '../../req-validate/common/IListReq';
+import {
+  IRoleDetailReq,
+  IRoleDetailResp,
+} from '../../req-validate/role/IRoleDetailReq';
+
 @Service()
 class RoleService {
+  /**
+   * @Author: ChenJF
+   * @Date: 2024/10/14 11:41
+   * @Description: 列表查询
+   */
+  public async roleList(
+    req: IListReq,
+  ): Promise<CommonReturnInterface<IListResp<RoleEntity> | Error>> {
+    try {
+      const queryBuilder = SqlTools.createListRepository({
+        repo: getRepository(RoleEntity),
+        req,
+        andWhere: [
+          {
+            name: 'isDel',
+            values: [BooleanEunm.FALSE],
+            exactMatch: true,
+          },
+        ],
+      });
+      const resp = await queryBuilder.getManyAndCount();
+
+      const roleList = resp[0] || [];
+      // 将权限id转为权限对象
+      roleList.forEach((role) => {
+        role.permissions = role.permissionIds.map((id) => {
+          return PermissionMap[id];
+        });
+      });
+
+      return CommonTools.returnData({
+        rows: resp[0] || [],
+        total: resp[1] || 0,
+      });
+    } catch (e) {
+      console.error('[roleList]', '查询角色列表数据失败', e);
+      return CommonTools.returnError(CodeEnum.DB_QUERY_ERROR);
+    }
+  }
+
+  /**
+   * @Author: ChenJF
+   * @Date: 2024/10/15 14:49
+   * @Description: 详情查询
+   */
+  public async roleDetail(
+    req: IRoleDetailReq,
+  ): Promise<CommonReturnInterface<IRoleDetailResp | Error>> {
+    try {
+      const resp = await this.getRoleInfoForId(req.id);
+      if (!resp) {
+        console.error('[roleDetail]', '查询角色详情数据为空', req);
+        return CommonTools.returnError(CodeEnum.DB_SELECT_ID_EMPTY);
+      }
+
+      return CommonTools.returnData(resp);
+    } catch (e) {
+      console.error('[roleDetail]', '查询角色详情数据失败', e);
+      return CommonTools.returnError(CodeEnum.DB_QUERY_ERROR);
+    }
+  }
+
   /**
    * @Author: ChenJF
    * @Date: 2024/10/12 10:14
@@ -164,6 +232,11 @@ class RoleService {
 
       const roleList = await repository.getMany();
       console.log('[getRolesForIds]', ids, roleList);
+      roleList.forEach((role) => {
+        role.permissions = role.permissionIds.map((pId) => {
+          return PermissionMap[pId];
+        });
+      });
       return roleList;
     } catch (err) {
       console.error('[getRolesForIds]', err);
@@ -186,6 +259,12 @@ class RoleService {
         .createQueryBuilder('role')
         .where(where);
       const roleInfo = await repository.getOne();
+      if (roleInfo) {
+        // 将权限id转为权限对象
+        roleInfo.permissions = roleInfo.permissionIds.map((pId) => {
+          return PermissionMap[pId];
+        });
+      }
       console.log('[getRoleInfoForId]', id, roleInfo);
       return roleInfo;
     } catch (e) {

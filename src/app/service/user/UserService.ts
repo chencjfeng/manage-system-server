@@ -16,10 +16,74 @@ import {
 } from '../../req-validate/user/IUserEditReq';
 import { IUserPwdReq, IUserPwdResp } from '../../req-validate/user/IUserPwdReq';
 import { RoleService } from '../role/RoleService';
+import { IListReq, IListResp } from '../../req-validate/common/IListReq';
+import {
+  IUserDetailReq,
+  IUserDetailResp,
+} from '../../req-validate/user/IUserDetailReq';
 
 @Service()
 class UserService {
   constructor(private readonly roleService: RoleService) {}
+
+  /**
+   * @Author: ChenJF
+   * @Date: 2024/10/14 11:41
+   * @Description: 列表查询
+   */
+  public async userList(
+    req: IListReq,
+  ): Promise<CommonReturnInterface<IListResp<UserEntity> | Error>> {
+    try {
+      const queryBuilder = SqlTools.createListRepository({
+        repo: getRepository(UserEntity),
+        req,
+        andWhere: [
+          {
+            name: 'isDel',
+            values: [BooleanEunm.FALSE],
+            exactMatch: true,
+          },
+        ],
+      });
+      const resp = await queryBuilder.getManyAndCount();
+
+      let userList = resp[0] || [];
+      // 获取角色信息
+      userList = await Promise.all(
+        userList.map(async (item) => {
+          // 如果item.roleIds存在，则获取对应的角色信息，否则保持原样
+          if (item.roleIds) {
+            item.roles = await this.roleService.getRolesForIds(item.roleIds);
+          }
+          return item;
+        }),
+      );
+
+      return CommonTools.returnData({
+        rows: userList,
+        total: resp[1] || 0,
+      });
+    } catch (e) {
+      console.error('[userList]', '查询用户列表数据失败', e);
+      return CommonTools.returnError(CodeEnum.DB_QUERY_ERROR);
+    }
+  }
+
+  /**
+   * @Author: ChenJF
+   * @Date: 2024/10/15 15:45
+   * @Description: 获取用户详情数据
+   */
+  public async userDetail(
+    req: IUserDetailReq,
+  ): Promise<CommonReturnInterface<IUserDetailResp | Error>> {
+    const userInfo = await this.getUserInfoForId(req.id);
+    if (!userInfo) {
+      return CommonTools.returnError(CodeEnum.DB_SELECT_ID_EMPTY);
+    }
+    return CommonTools.returnData(userInfo);
+  }
 
   /**
    * @Author: ChenJF
@@ -343,6 +407,12 @@ class UserService {
         .where(where);
       const userInfo = await repository.getOne();
       console.log('[getUserInfoForId]', id, userInfo);
+      if (userInfo?.roleIds) {
+        // 继续查询角色信息
+        userInfo.roles = await this.roleService.getRolesForIds(
+          userInfo.roleIds,
+        );
+      }
       return userInfo;
     } catch (e) {
       console.error('[getUserInfoForId]', e);

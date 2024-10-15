@@ -10,11 +10,25 @@ import { IUserEditReq } from '../../req-validate/user/IUserEditReq';
 import { IUserPwdReq } from '../../req-validate/user/IUserPwdReq';
 import { ModuleEnum, OperationEnum } from '../../../enum/PermissionEnum';
 import { ApiAuth } from '../../../decorator/controller/ApiAuth';
+import { IListReq } from '../../req-validate/common/IListReq';
+import { IUserDetailReq } from '../../req-validate/user/IUserDetailReq';
 
 @JsonController()
 @Service()
 class UserController {
   constructor(private readonly userService: UserService) {}
+
+  @Post(Api.USER_LIST)
+  @ApiAuth(ModuleEnum.USER, OperationEnum.QUERY)
+  public async userList(@Body({ validate: true }) body: IListReq) {
+    return await this.userService.userList(body);
+  }
+
+  @Post(Api.USER_DETAIL)
+  @ApiAuth(ModuleEnum.USER, OperationEnum.QUERY)
+  public async userDetail(@Body({ validate: true }) body: IUserDetailReq) {
+    return await this.userService.userDetail(body);
+  }
 
   @Post(Api.USER_ADD)
   @ApiAuth(ModuleEnum.USER, OperationEnum.ADD)

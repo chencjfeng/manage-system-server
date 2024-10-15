@@ -128,10 +128,10 @@ export {
   ModuleStringEnum,
   OperationEnum,
   OperationStringEnum,
+  type IPermission,
+  type IPermissionResp,
   PermissionList,
   PermissionMap,
   getAllPermissionIds,
-  type IPermission,
-  type IPermissionResp,
   getAllPermissionList,
 };
