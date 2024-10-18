@@ -1,6 +1,10 @@
 import { Service } from 'typedi';
 import { RouterContext } from 'koa-router';
-import { ILoginReq, ILoginResp } from '../../req-validate/auth/ILoginReq';
+import {
+  ILoginParams,
+  ILoginReq,
+  ILoginResp,
+} from '../../req-validate/auth/ILoginReq';
 import { CommonReturnInterface, CommonTools } from '../../../tools/CommonTools';
 import { AesTools } from '../../../tools/AesTools';
 import { UserService } from '../user/UserService';
@@ -9,6 +13,10 @@ import { redisConfig } from '../../../config/RedisConfig';
 import { CookieKeyEnum } from '../../../enum/CookieKeyEnum';
 import { CookieTools } from '../../../tools/CookieTools';
 import { UserStatusEnum } from '../../entity/UserEntity';
+import { LoginLogEntity } from '../../entity/LoginLogEntity';
+import { getRepository } from 'typeorm';
+import { SqlTools } from '../../../tools/SqlTools';
+import { CtxHeaderTools } from '../../../tools/CtxHeaderTools';
 
 @Service()
 class AuthService {
@@ -31,7 +39,7 @@ class AuthService {
       AesTools.BROWSER_SEC_KEY,
     );
 
-    const userInfo = await this.userService.getUserInfoForLoginName(
+    const userInfo = await this.userService.getUserInfoAndRoleForLoginName(
       body.loginName,
     );
     if (!userInfo) {
@@ -57,6 +65,7 @@ class AuthService {
     );
     if (!flag) {
       // redis保存失败，登录失败
+      console.log('[login]', 'redis保存失败', userInfo.loginName);
       return CommonTools.returnError(CodeEnum.LOGIN_COMMON_ERROR);
     }
     const isSecure = ctx.request.protocol === 'https';
@@ -65,8 +74,7 @@ class AuthService {
       secure: isSecure,
     });
 
-    // 如果需要打登录日志，则在这里处理
-
+    // 登录成功
     return CommonTools.returnData({
       userInfo,
       token,
@@ -102,6 +110,40 @@ class AuthService {
       void redisConfig.setString(token, loginName, this.tokenInvalidTime);
     }
     return loginName;
+  }
+
+  /**
+   * @Author: ChenJF
+   * @Date: 2024/10/16 14:32
+   * @Description: 登录日志存储
+   */
+  public async loginLog(params: ILoginParams) {
+    const { ctx, loginName, loginStatus, loginMsg } = params;
+    const srcIp = CtxHeaderTools.getSrcIp(ctx);
+    const insertInfo = new LoginLogEntity({
+      loginName,
+      loginStatus,
+      loginMsg,
+      srcIp,
+      reqBody: JSON.stringify(ctx.request.body || {}),
+    });
+
+    try {
+      const resp = await getRepository(LoginLogEntity).insert(insertInfo);
+      const id = (resp?.generatedMaps?.pop() as LoginLogEntity)?.id;
+      if (SqlTools.isSuccess(resp) && id) {
+        return CommonTools.returnData({
+          id,
+        });
+      }
+
+      console.log('[loginLog]', 'sql插入登录日志失败', resp);
+      return CommonTools.returnError(CodeEnum.DB_INSERT_ERROR);
+    } catch (e) {
+      console.log(e);
+      console.error('[loginLog]', '插入登录日志失败', e);
+      return CommonTools.returnError(CodeEnum.DB_INSERT_ERROR);
+    }
   }
 }
 

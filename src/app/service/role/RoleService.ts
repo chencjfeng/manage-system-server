@@ -6,7 +6,11 @@ import { IRoleAddReq, IRoleAddResp } from '../../req-validate/role/IRoleAddReq';
 import { CommonReturnInterface, CommonTools } from '../../../tools/CommonTools';
 import { CodeEnum } from '../../../enum/CodeEnum';
 import { SqlTools } from '../../../tools/SqlTools';
-import { PermissionMap } from '../../../enum/PermissionEnum';
+import {
+  IPermission,
+  IPermissionResp,
+  PermissionMap,
+} from '../../../enum/PermissionEnum';
 import { IDeleteReq } from '../../req-validate/common/IDeleteReq';
 import { IBatchHandleResp } from '../../../type/Common';
 import { IRoleEditReq } from '../../req-validate/role/IRoleEditReq';
@@ -44,9 +48,7 @@ class RoleService {
       const roleList = resp[0] || [];
       // 将权限id转为权限对象
       roleList.forEach((role) => {
-        role.permissions = role.permissionIds.map((id) => {
-          return PermissionMap[id];
-        });
+        role.permissions = this.permissionIdsToPermissions(role.permissionIds);
       });
 
       return CommonTools.returnData({
@@ -233,9 +235,7 @@ class RoleService {
       const roleList = await repository.getMany();
       console.log('[getRolesForIds]', ids, roleList);
       roleList.forEach((role) => {
-        role.permissions = role.permissionIds.map((pId) => {
-          return PermissionMap[pId];
-        });
+        role.permissions = this.permissionIdsToPermissions(role.permissionIds);
       });
       return roleList;
     } catch (err) {
@@ -261,9 +261,9 @@ class RoleService {
       const roleInfo = await repository.getOne();
       if (roleInfo) {
         // 将权限id转为权限对象
-        roleInfo.permissions = roleInfo.permissionIds.map((pId) => {
-          return PermissionMap[pId];
-        });
+        roleInfo.permissions = this.permissionIdsToPermissions(
+          roleInfo.permissionIds,
+        );
       }
       console.log('[getRoleInfoForId]', id, roleInfo);
       return roleInfo;
@@ -315,6 +315,40 @@ class RoleService {
       console.error('[delSingleRole]', e);
       return CommonTools.returnError(CodeEnum.DB_DELETE_ERROR);
     }
+  }
+
+  /**
+   * @Author: ChenJF
+   * @Date: 2024/10/17 09:51
+   * @Description: 将权限id转为权限对象嵌套数组
+   */
+  private permissionIdsToPermissions(
+    permissionIds: string[],
+  ): IPermissionResp[] {
+    const permissionRespMap: Record<string, IPermission[]> = {};
+    permissionIds
+      .map((pId) => {
+        return PermissionMap[pId];
+      })
+      .sort((a, b) => a.index - b.index)
+      .forEach((permission) => {
+        if (!permissionRespMap[permission.module]) {
+          permissionRespMap[permission.module] = [permission];
+        } else {
+          permissionRespMap[permission.module].push(permission);
+        }
+      });
+    const permissionRespList: IPermissionResp[] = [];
+    Object.values(permissionRespMap)
+      .sort((a, b) => a[0].index - b[0].index)
+      .forEach((permissions) => {
+        permissionRespList.push({
+          module: permissions[0].module,
+          moduleName: permissions[0].moduleName,
+          operations: permissions,
+        });
+      });
+    return permissionRespList;
   }
 }
 

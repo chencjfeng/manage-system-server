@@ -1,9 +1,10 @@
 interface IPermission {
   id: string; // id
+  index: number; // 权重排序，数字越小，排序越靠前
   module: ModuleEnum; // 模块
-  moduleName: string; // 模块名称，中文名
+  moduleName: ModuleStringEnum; // 模块名称，中文名
   operation: OperationEnum; // 操作权限
-  operationName: string; // 操作权限名称
+  operationName: OperationStringEnum; // 操作权限名称
 }
 
 interface IPermissionResp {
@@ -14,13 +15,16 @@ interface IPermissionResp {
 
 const initPermissionEntityList = (): IPermission[] => {
   const list: IPermission[] = [];
+  let index = 0;
   PermissionList.forEach((p) => {
     const module = p.module as ModuleEnum;
     const moduleName = ModuleStringEnum[module];
 
     p.operations.forEach((op) => {
+      index += 1;
       list.push({
         id: `${module}_${op}`,
+        index,
         module,
         moduleName,
         operation: op,
