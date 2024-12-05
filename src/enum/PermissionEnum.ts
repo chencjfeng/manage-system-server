@@ -36,11 +36,13 @@ const initPermissionEntityList = (): IPermission[] => {
 };
 
 enum ModuleEnum {
+  RESOURCE = 'RESOURCE', // 资源
   USER = 'USER', // 用户
   ROLE = 'ROLE', // 角色
 }
 
 enum ModuleStringEnum {
+  RESOURCE = '资源管理', // 资源
   USER = '用户管理', // 用户
   ROLE = '角色管理', // 角色
 }
@@ -68,6 +70,16 @@ interface IPermissionMap {
   operations: OperationEnum[];
 }
 const PermissionList: IPermissionMap[] = [
+  {
+    // 资源管理
+    module: ModuleEnum.RESOURCE,
+    operations: [
+      OperationEnum.QUERY,
+      OperationEnum.ADD,
+      OperationEnum.EDIT,
+      OperationEnum.DELETE,
+    ],
+  },
   {
     // 用户管理
     module: ModuleEnum.USER,

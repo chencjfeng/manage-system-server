@@ -5,13 +5,20 @@ import { ILoginParams, ILoginReq } from '../../req-validate/auth/ILoginReq';
 import { AuthService } from '../../service/auth/AuthService';
 import { RouterContext } from 'koa-router';
 import { CodeEnum } from '../../../enum/CodeEnum';
+import { CurrentLoginName } from '../../../decorator/controller/CurrentLoginName';
+import { IChangePwdReq } from '../../req-validate/auth/IChangePwdReq';
+import { UserService } from '../../service/user/UserService';
+import { CommonTools } from '../../../tools/CommonTools';
 
 @JsonController()
 @Service()
 class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly userService: UserService,
+  ) {}
 
-  @Post(Api.LOGIN_API)
+  @Post(Api.AUTH_LOGIN)
   public async login(
     @Ctx() ctx: RouterContext,
     @Body({ validate: true }) body: ILoginReq,
@@ -29,9 +36,24 @@ class AuthController {
     return resp;
   }
 
-  @Get(Api.LOGIN_OUT_API)
+  @Get(Api.AUTH_LOGIN_OUT)
   public async loginOut(@Ctx() ctx: RouterContext) {
     return await this.authService.loginOut(ctx);
+  }
+
+  @Post(Api.AUTH_CHANGE_PWD)
+  public async changePwd(
+    @CurrentLoginName() loginName: string,
+    @Body({ validate: true }) body: IChangePwdReq,
+  ) {
+    const userInfo = await this.userService.getUserInfoForLoginName(loginName);
+    if (userInfo?.id) {
+      return await this.userService.editUserPassword(loginName, {
+        ...body,
+        id: userInfo?.id,
+      });
+    }
+    return CommonTools.returnData({}, CodeEnum.USER_EDIT_EMPTY_ERROR);
   }
 }
 

@@ -4,7 +4,6 @@ import {
   Entity,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { BooleanEunm } from '../../enum/CommonEnum';
 import { CodeEnum } from '../../enum/CodeEnum';
 
 /**

@@ -5,6 +5,6 @@ import { Api } from '../../constant/Api';
  * @Date: 2024/5/30 15:35
  * @Description: 认证加白接口
  */
-const AuthWhitePath = [Api.TEST, Api.LOGIN_API];
+const AuthWhitePath = [Api.TEST, Api.AUTH_LOGIN];
 
 export { AuthWhitePath };

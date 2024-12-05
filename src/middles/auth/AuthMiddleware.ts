@@ -68,6 +68,7 @@ export class AuthMiddleware implements KoaMiddlewareInterface {
     // 如果标准restful则将whitePathMap需要将key转为数组，遍历数组，利用正则判断urlPath是否有符合拦截标准key
     // new RegExp(`^${'常量定义好的白名单key'.replace(/:\w+/g, '\\w+')}$`).test(urlPath)
     // 同时还需要传入method，判断method是否一致（delete和update的接口一般定义一致）
+    console.log(JSON.stringify(this.whitePathMap));
     return this.whitePathMap[urlPath] || false;
   }
 

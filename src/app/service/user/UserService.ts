@@ -273,7 +273,7 @@ class UserService {
     }
 
     try {
-      // 修改用户状态
+      // 修改用户名
       const resp = await getRepository(UserEntity)
         .createQueryBuilder()
         .update()

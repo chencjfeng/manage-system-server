@@ -39,7 +39,7 @@ class AuthService {
       AesTools.BROWSER_SEC_KEY,
     );
 
-    const userInfo = await this.userService.getUserInfoAndRoleForLoginName(
+    const userInfo = await this.userService.getUserInfoForLoginName(
       body.loginName,
     );
     if (!userInfo) {
