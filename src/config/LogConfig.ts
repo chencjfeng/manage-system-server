@@ -10,6 +10,19 @@ import { Configuration } from 'log4js';
 import { config, ConfigModeEnum } from './Config';
 import fs from 'fs';
 
+// 获取文件名和行号的函数
+const getCallerInfo = () => {
+  const err = new Error();
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error
+  const stack = err.stack.split('\n');
+  const callerLine = stack[3]; // 第三行通常是调用 log 方法的行
+  const match = callerLine.match(/\((.*):(\d+):\d+\)/);
+  const fileName = match ? match[1] : 'unknown file';
+  const lineNumber = match ? match[2] : 'unknown line';
+  return `[${fileName}:${lineNumber}]`;
+};
+
 const tmp = JSON.stringify;
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-expect-error
@@ -91,19 +104,25 @@ class LogConfig {
     log4.configure(this.logConfig);
 
     const consoleLogger = log4.getLogger('application');
+    const hookConsole = (method: string) => {
+      console[method] = (...arg: any) => {
+        const prefix = getCallerInfo();
+        consoleLogger[method === 'log' ? 'info' : method](prefix, ...arg);
+      };
+    };
 
     if (!NodeEnvTools.isDev()) {
       // 非本地开发时
       // hooks控制台输出
       if (config.mode === ConfigModeEnum.DEV) {
         // 调试模式，打印所有日志
-        console.trace = consoleLogger.trace.bind(consoleLogger);
-        console.debug = consoleLogger.debug.bind(consoleLogger);
-        console.log = consoleLogger.info.bind(consoleLogger);
-        console.info = consoleLogger.info.bind(consoleLogger);
-        console.warn = consoleLogger.warn.bind(consoleLogger);
+        hookConsole('trace');
+        hookConsole('debug');
+        hookConsole('log');
+        hookConsole('info');
+        hookConsole('warn');
       }
-      console.error = consoleLogger.error.bind(consoleLogger);
+      hookConsole('error');
     }
   }
 
