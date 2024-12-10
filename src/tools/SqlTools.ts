@@ -1,6 +1,7 @@
 import {
   DeleteResult,
   InsertResult,
+  ObjectLiteral,
   Repository,
   SelectQueryBuilder,
   UpdateResult,
@@ -38,7 +39,7 @@ class SqlTools {
    * @Date: 2024/10/14 11:37
    * @Description: 创建list的select查询体
    */
-  public static createListRepository<T>(params: {
+  public static createListRepository<T extends ObjectLiteral>(params: {
     repo: Repository<T>;
     req: IListReq;
     andWhere?: ISearch[]; // 其他过滤条件

@@ -11,7 +11,7 @@ function obfuscateFile(filePath) {
   const input = fs.readFileSync(filePath, 'utf8');
   const obfuscationResult = JavaScriptObfuscator.obfuscate(input, {
     compact: true,
-    controlFlowFlattening: true,
+    controlFlowFlattening: false, // false，可以打印log的文件名
   });
 
   const obfuscatedCode = obfuscationResult.getObfuscatedCode();
